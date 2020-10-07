@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.intern.test.constant.GlobalConstant;
 import com.intern.test.entity.Student;
 import com.intern.test.pojo.StudentPojo;
 import com.intern.test.response.BaseResponse;
@@ -23,10 +24,10 @@ public class StudentController {
 	   StudentService studentService;
 	
 	 @GetMapping ( value= "/student")
-	 public List<Student> getStudent() {
-		 return studentService.getStudent();
-	
-	 }
+	 public BaseResponse getStudent() {
+			List<Student> students= studentService.getStudent();
+			return new BaseResponse(GlobalConstant.SUCCESS, students,GlobalConstant.Message.SUCCESS_MESSAGE);
+		}
 	 @PostMapping (value ="/student")
 	 public BaseResponse addStudent(@RequestBody Student student) {
 		 
@@ -35,17 +36,16 @@ public class StudentController {
 		 }catch(Exception e) {
 			 System.out.println("Error occur "+e.getMessage());
 		 
-		 return new BaseResponse(1, null, "Error cannot create student");
+			 return new BaseResponse(GlobalConstant.FAIL, null,GlobalConstant.Message.FAIL_MESSAGE);
+			}
+			return new BaseResponse(GlobalConstant.SUCCESS, student,GlobalConstant.Message.SUCCESS_MESSAGE);
 		}
-		return new BaseResponse(0, student, "Successfully created ");
-	}
-		 
 	 
 	 @GetMapping ( value = "/student/ {id}")
 	 public Student getById(@PathVariable Long id)
 	 {
+	
 		 return studentService.findById(id);
-		
 	 }
 	 @DeleteMapping( value ="/student")
 	 public void  deleteById(@PathVariable Long id) {
