@@ -19,51 +19,50 @@ import com.intern.test.service.StudentService;
 
 @RestController
 public class StudentController {
-     
-	   @Autowired
-	   StudentService studentService;
-	
-	 @GetMapping ( value= "/student")
-	 public BaseResponse getStudent() {
-			List<Student> students= studentService.getStudent();
-			return new BaseResponse(GlobalConstant.SUCCESS, students,GlobalConstant.Message.SUCCESS_MESSAGE);
+
+	@Autowired
+	StudentService studentService;
+
+	@GetMapping(value = "/students")
+	public BaseResponse getStudent() {
+		List<Student> students = studentService.getStudent();
+		return new BaseResponse(GlobalConstant.SUCCESS, students, GlobalConstant.Message.SUCCESS_MESSAGE);
+	}
+
+	@PostMapping(value = "/student")
+	public BaseResponse addStudent(@RequestBody Student student) {
+
+		try {
+			student = studentService.save(student);
+		} catch (Exception e) {
+			System.out.println("Error occur " + e.getMessage());
+
+			return new BaseResponse(GlobalConstant.FAIL, null, GlobalConstant.Message.FAIL_MESSAGE);
 		}
-	 @PostMapping (value ="/student")
-	 public BaseResponse addStudent(@RequestBody Student student) {
-		 
-		 try {
-			 student=studentService.save(student);
-		 }catch(Exception e) {
-			 System.out.println("Error occur "+e.getMessage());
-		 
-			 return new BaseResponse(GlobalConstant.FAIL, null,GlobalConstant.Message.FAIL_MESSAGE);
-			}
-			return new BaseResponse(GlobalConstant.SUCCESS, student,GlobalConstant.Message.SUCCESS_MESSAGE);
+		return new BaseResponse(GlobalConstant.SUCCESS, student, GlobalConstant.Message.SUCCESS_MESSAGE);
+	}
+
+	@GetMapping(value = "/students/ {id}")
+	public Student getById(@PathVariable Long id) {
+		return studentService.findById(id);
+	}
+
+	@DeleteMapping(value = "/students/{id}")
+	public void deleteById(@PathVariable Long id) {
+		studentService.deleteStudent(id);
+	}
+
+	@PutMapping(value = "/student")
+	public Student updateStudent(@RequestBody StudentPojo studentPojo) {
+
+		Student student = studentService.findById(studentPojo.getId());
+		if (student == null) {
+			return null;
 		}
-	 
-	 @GetMapping ( value = "/student/ {id}")
-	 public Student getById(@PathVariable Long id)
-	 {
-	
-		 return studentService.findById(id);
-	 }
-	 @DeleteMapping( value ="/student")
-	 public void  deleteById(@PathVariable Long id) {
-		 studentService.deleteStudent(id);
-	 }
-	 
-	 @PutMapping (value = "/student")
-		public Student updateStudent(@RequestBody StudentPojo studentPojo) {
-			
-			Student student = studentService.findById(studentPojo.getId());
-			if(student==null) {
-				return null;
-			}
-			student.setPhone(studentPojo.getPhone());
-			student.setRollNo(studentPojo.getRollNo());
-			return studentService.save(student);
-			
-		}
-	 
-	
+		student.setPhone(studentPojo.getPhone());
+		student.setRollNo(studentPojo.getRollNo());
+		return studentService.save(student);
+
+	}
+
 }
